@@ -1,9 +1,11 @@
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import {useRouter} from 'next/router'
 import Header from '../../components/Header'
 import styled from 'styled-components'
 import {Container, Row, Col, Jumbotron, Button} from 'react-bootstrap';
 import {useTypedSelector} from '../../hooks/useTypedSelector'
+import { useActions } from '../../hooks/useActions'
 import Loader from '../../components/Loader'
 import Message from '../../components/Message'
 
@@ -22,11 +24,16 @@ const BorderP =  styled.p`
     padding: 30px
 `
 
-export default function New() {
-    const {query} = useRouter()
-    const {posts, error, loading} = useTypedSelector(state=> state.user)
+export default function New({post}) {
+    // const {query} = useRouter()
+    // const {posts, error, loading} = useTypedSelector(state=> state.user)
+    // const {fetchUsers} = useActions()
 
-    const post = posts.filter( post => post.id == query.id)
+    // useEffect(()=>{
+    //     fetchUsers()
+    // }, [])
+
+    // const post = posts.filter( post => post.id == query.id)[0]
 
     return (
         <Container fluid>
@@ -34,20 +41,27 @@ export default function New() {
                     <Col>
                         <Centered>
                             <Header/>
-                            {loading ? <Loader/> : error ? <Message children={error}/> : 
                             <Jumbotron style={{width:'50%'}}>
-                            <h1>{post[0].title}</h1>
-                            <BorderP>
-                                {post[0].body}
-                            </BorderP>
-                            <Link href="/">
-                                <Button variant="primary">Back</Button>
-                            </Link>
-                            </Jumbotron>}
+                                <h1>{post.title}</h1>
+                                <BorderP>
+                                    {post.body}
+                                </BorderP>
+                                <Link href="/">
+                                    <Button variant="primary">Back</Button>
+                                </Link>
+                            </Jumbotron>
                         </Centered>
                     </Col>
                 </Row>
             </Container>
     )
+}
+
+export async function getServerSideProps({params}) {
+    const res = await fetch(`https://simple-blog-api.crew.red/posts/${params.id}`)
+    const post = await res.json()
+    return {
+      props: {post}
+    }
 }
 
