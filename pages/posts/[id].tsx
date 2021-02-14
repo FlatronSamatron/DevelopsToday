@@ -8,6 +8,7 @@ import {useTypedSelector} from '../../hooks/useTypedSelector'
 import { useActions } from '../../hooks/useActions'
 import Loader from '../../components/Loader'
 import Message from '../../components/Message'
+import axios from 'axios'
 
 
 const Centered =  styled.div`
@@ -58,10 +59,10 @@ export default function New({post}) {
 }
 
 export async function getServerSideProps({params}) {
-    const res = await fetch(`https://simple-blog-api.crew.red/posts/${params.id}`)
-    const post = await res.json()
+    const {data} = await axios.get(`https://simple-blog-api.crew.red/posts/${params.id}`)
+    const post = data
     return {
-      props: {post}
-    }
+        props: {post}
+    }            
 }
 
